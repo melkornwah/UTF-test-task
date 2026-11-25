@@ -1,38 +1,64 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
-import { selectCartCount, selectTotalPrice } from '../store/store';
+import {
+  selectCartCount,
+  selectTotalPrice,
+  selectCart,
+  removeFromCart,
+  updateQuantity,
+  clearCart
+} from '../store/store';
+
+import CartItem from './CartItem';
 
 function Cart() {
   const dispatch = useDispatch();
-  const cart = useSelector((state) => state.app.cart);
+  const cart = useSelector(selectCart);
   const cartCount = useSelector(selectCartCount);
   const totalPrice = useSelector(selectTotalPrice);
 
   const [isOpen, setIsOpen] = useState(false);
-  const [showCheckout, setShowCheckout] = useState(false);
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
+
+  const timerRef = useRef(null);
 
   const handleRemoveItem = (id) => {
-    dispatch({ type: 'app/removeFromCart', payload: id });
-  }
+    dispatch(removeFromCart(id));
+  };
 
-  const handleUpdateQuantity = (id, quantity) => {
-    if (quantity <= 0) {
+  const handleUpdateQuantity = (id, delta) => {
+    const item = cart.find(item => item.id === id);
+
+    if (item === undefined) {
+      return;
+    }
+
+    const newQuantity = item.quantity + delta;
+
+    if (newQuantity <= 0) {
       handleRemoveItem(id);
       return;
     }
-    dispatch({ type: 'app/updateQuantity', payload: { id, quantity } });
+
+    dispatch(updateQuantity({ id, quantity: newQuantity }));
   };
 
   const handleCheckout = () => {
-    setShowCheckout(true);
-    setTimeout(() => {
-      alert('Заказ оформлен!')
-      dispatch({ type: 'app/clearCart' })
-      setShowCheckout(false)
-      setIsOpen(false)
+    setIsCheckingOut(true);
+
+    timerRef.current = setTimeout(() => {
+      dispatch(clearCart());
+      setIsCheckingOut(false);
+      setIsOpen(false);
+
+      alert('Заказ оформлен!');
     }, 1000);
   };
+
+  useEffect(() => {
+    return () => clearTimeout(timerRef.current);
+  }, []);
 
   return (
     <div className="cart">
@@ -54,29 +80,13 @@ function Cart() {
             {cart.length === 0 ? (
               <p>Корзина пуста</p>
             ) : (
-              cart.map(item => (
-                <div key={item.id} className="cart-item">
-                  <img src={item.image} alt={item.name} />
-                  <div className="item-details">
-                    <h4>{item.name}</h4>
-                    <p>${item.price}</p>
-                    <div className="quantity-controls">
-                      <button onClick={() => handleUpdateQuantity(item.id, item.quantity - 1)}>
-                        -
-                      </button>
-                      <span>{item.quantity}</span>
-                      <button onClick={() => handleUpdateQuantity(item.id, item.quantity + 1)}>
-                        +
-                      </button>
-                    </div>
-                  </div>
-                  <button 
-                    className="remove-btn"
-                    onClick={() => handleRemoveItem(item.id)}
-                  >
-                    Удалить
-                  </button>
-                </div>
+              cart.map(cartItem => (
+                <CartItem
+                  key={cartItem.id}
+                  item={cartItem}
+                  handleUpdateQuantity={handleUpdateQuantity}
+                  handleRemoveItem={handleRemoveItem}
+                />
               ))
             )}
           </div>
@@ -86,9 +96,9 @@ function Cart() {
             <button 
               className="checkout-btn"
               onClick={handleCheckout}
-              disabled={cart.length === 0 || showCheckout}
+              disabled={cart.length === 0 || isCheckingOut}
             >
-              {showCheckout ? 'Оформляем...' : 'Оформить заказ'}
+              {isCheckingOut ? 'Оформляем...' : 'Оформить заказ'}
             </button>
           </div>
         </div>
