@@ -13,7 +13,7 @@ function Header() {
         name: 'Иван Иванов', 
         email: 'ivan@example.com' 
       }));
-    }, 500)
+    }, 500);
   }, [dispatch]);
 
   return (
