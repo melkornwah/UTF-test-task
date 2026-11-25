@@ -1,27 +1,16 @@
 import { useState, useEffect } from 'react';
-import { useDispatch } from 'react-redux';
 
 import { mockProducts } from '../data/mockData';
 
-function ProductList() {
-  const dispatch = useDispatch();
+import ProductCard from './ProductCard';
 
+function ProductList() {
   const [products, setProducts] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('name');
-  const [showFilters, setShowFilters] = useState(false);
-
-  useEffect(() => {
-    setLoading(true);
-
-    setTimeout(() => {
-      setProducts(mockProducts);
-      setLoading(false);
-    }, 1000)
-  }, []);
 
   const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchTerm.toLowerCase());
@@ -32,19 +21,16 @@ function ProductList() {
     if (sortBy === 'name') return a.name.localeCompare(b.name);
     if (sortBy === 'price') return a.price - b.price;
     return 0;
-  })
+  });
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  }
+  useEffect(() => {
+    const timerId = setTimeout(() => {
+      setProducts(mockProducts);
+      setLoading(false);
+    }, 1000);
 
-  const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value);
-  }
-
-  const handleSortChange = (e) => {
-    setSortBy(e.target.value);
-  }
+    return () => clearTimeout(timerId);
+  }, []);
 
   if (loading) {
     return <div className="loading">Загрузка товаров...</div>;
@@ -58,45 +44,31 @@ function ProductList() {
             type="text"
             placeholder="Поиск товаров..."
             value={searchTerm}
-            onChange={handleSearchChange}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
         </div>
 
         <div className="filter-controls">
-          <select value={selectedCategory} onChange={handleCategoryChange}>
+          <select value={selectedCategory} onChange={(e) => setSelectedCategory(e.target.value)}>
             <option value="all">Все категории</option>
             <option value="phones">Телефоны</option>
             <option value="laptops">Ноутбуки</option>
             <option value="tablets">Планшеты</option>
           </select>
 
-          <select value={sortBy} onChange={handleSortChange}>
+          <select value={sortBy} onChange={(e) => setSortBy(e.target.value)}>
             <option value="name">По названию</option>
             <option value="price">По цене</option>
           </select>
-
-          <button onClick={() => setShowFilters(!showFilters)}>
-            {showFilters ? 'Скрыть фильтры' : 'Показать фильтры'}
-          </button>
         </div>
       </div>
 
       <div className="products">
         {filteredProducts.map(product => (
-          <div key={product.id} className="product-card">
-            <img src={product.image} alt={product.name} />
-            <h3>{product.name}</h3>
-            <p>{product.description}</p>
-            <div className="price">${product.price}</div>
-            <button 
-              onClick={() => {
-                const action = { type: 'app/addToCart', payload: product };
-                dispatch(action);
-              }}
-            >
-              Добавить в корзину
-            </button>
-          </div>
+          <ProductCard
+            key={product.id}
+            product={product}
+          />
         ))}
       </div>
     </div>
