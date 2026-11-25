@@ -4,8 +4,6 @@ const initialState = {
   cart: [],
   user: null,
   error: null,
-  cartCount: 0,
-  totalPrice: 0,
 };
 
 const appSlice = createSlice({
@@ -21,16 +19,10 @@ const appSlice = createSlice({
       } else {
         state.cart.push({ ...product, quantity: 1 });
       }
-
-      state.cartCount = state.cart.reduce((total, item) => total + item.quantity, 0);
-      state.totalPrice = state.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
     },
 
     removeFromCart: (state, action) => {
       state.cart = state.cart.filter(item => item.id !== action.payload);
-
-      state.cartCount = state.cart.reduce((total, item) => total + item.quantity, 0);
-      state.totalPrice = state.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
     },
 
     updateQuantity: (state, action) => {
@@ -40,9 +32,6 @@ const appSlice = createSlice({
       if (item) {
         item.quantity = quantity;
       }
-
-      state.cartCount = state.cart.reduce((total, item) => total + item.quantity, 0);
-      state.totalPrice = state.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
     },
 
     setUser: (state, action) => {
@@ -55,15 +44,15 @@ const appSlice = createSlice({
 
     clearCart: (state) => {
       state.cart = [];
-      state.cartCount = 0;
-      state.totalPrice = 0;
     }
   },
 });
 
 export const selectCart = (state) => state.app.cart;
-export const selectCartCount = (state) => state.app.cartCount;
-export const selectTotalPrice = (state) => state.app.totalPrice;
+export const selectCartCount = (state) =>
+  state.app.cart.reduce((total, item) => total + item.quantity, 0);
+export const selectTotalPrice = (state) =>
+  state.app.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
 export const selectUser = (state) => state.app.user;
 export const selectError = (state) => state.app.error;
 

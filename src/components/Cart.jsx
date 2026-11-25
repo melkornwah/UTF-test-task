@@ -1,11 +1,13 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 
+import { selectCartCount, selectTotalPrice } from '../store/store';
+
 function Cart() {
   const dispatch = useDispatch();
   const cart = useSelector((state) => state.app.cart);
-  const cartCount = useSelector((state) => state.app.cartCount);
-  const totalPrice = useSelector((state) => state.app.totalPrice);
+  const cartCount = useSelector(selectCartCount);
+  const totalPrice = useSelector(selectTotalPrice);
 
   const [isOpen, setIsOpen] = useState(false);
   const [showCheckout, setShowCheckout] = useState(false);
