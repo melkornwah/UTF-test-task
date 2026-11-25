@@ -3,7 +3,6 @@ import { configureStore, createSlice } from '@reduxjs/toolkit';
 const initialState = {
   cart: [],
   user: null,
-  error: null,
 };
 
 const appSlice = createSlice({
@@ -38,10 +37,6 @@ const appSlice = createSlice({
       state.user = action.payload;
     },
 
-    setError: (state, action) => {
-      state.error = action.payload;
-    },
-
     clearCart: (state) => {
       state.cart = [];
     }
@@ -54,14 +49,12 @@ export const selectCartCount = (state) =>
 export const selectTotalPrice = (state) =>
   state.app.cart.reduce((total, item) => total + (item.price * item.quantity), 0);
 export const selectUser = (state) => state.app.user;
-export const selectError = (state) => state.app.error;
 
 export const { 
   addToCart, 
   removeFromCart, 
   updateQuantity, 
   setUser, 
-  setError, 
   clearCart,
 } = appSlice.actions;
 

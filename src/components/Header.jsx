@@ -2,17 +2,19 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from '../store/store';
 
+const mockUser = { 
+  id: 1, 
+  name: 'Иван Иванов', 
+  email: 'ivan@example.com',
+};
+
 function Header() {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.app.user);
 
   useEffect(() => {
     setTimeout(() => {
-      dispatch(setUser({ 
-        id: 1, 
-        name: 'Иван Иванов', 
-        email: 'ivan@example.com' 
-      }));
+      dispatch(setUser(mockUser));
     }, 500);
   }, [dispatch]);
 
