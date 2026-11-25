@@ -2,11 +2,7 @@ import { useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { setUser } from '../store/store';
 
-const mockUser = { 
-  id: 1, 
-  name: 'Иван Иванов', 
-  email: 'ivan@example.com',
-};
+import { mockUser } from '../data/mockData';
 
 function Header() {
   const dispatch = useDispatch();
