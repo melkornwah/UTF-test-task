@@ -1,18 +1,9 @@
-import { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
-import { setUser } from '../store/store';
+import { useSelector } from 'react-redux';
 
-import { mockUser } from '../data/mockData';
+import { selectUser } from '../store/store';
 
 function Header() {
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.app.user);
-
-  useEffect(() => {
-    setTimeout(() => {
-      dispatch(setUser(mockUser));
-    }, 500);
-  }, [dispatch]);
+  const user = useSelector(selectUser);
 
   return (
     <header className="header">
