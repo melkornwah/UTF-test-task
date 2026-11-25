@@ -1,7 +1,7 @@
 {
   "name": "ecommerce-shop",
   "version": "1.0.0",
-  "description": "Интернет-магазин с исправленным кодом",
+  "description": "Интернет-магазин",
   "private": true,
   "scripts": {
     "dev": "vite",
